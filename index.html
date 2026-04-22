@@ -400,8 +400,8 @@
 
     function render() {
       const { card, level } = deck[index];
-      const front = level === 1 ? card.es : card.en;
-      const back  = level === 1 ? card.en : card.es;
+      const front = level === 1 ? card.es : card.nl;
+      const back  = level === 1 ? card.nl : card.es;
 
       document.getElementById("front-cat").textContent = card.category;
       document.getElementById("front-word").textContent = front;
