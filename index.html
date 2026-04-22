@@ -45,8 +45,8 @@
       justify-content: space-between;
     }
 
-    h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.5px; }
-    h1 span { color: var(--accent); }
+    h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
+    h1 img { width: 30px; height: 30px; border-radius: 8px; }
 
     .filter {
       display: flex;
@@ -301,7 +301,7 @@
 </head>
 <body>
   <header>
-    <h1>Flash <span>🇪🇸</span></h1>
+    <h1><img src="/icon.svg" alt="⚡"> Flash</h1>
     <div class="score">
       <span><span class="dot know"></span><span id="score-know">0</span> got it</span>
       <span><span class="dot skip"></span><span id="score-skip">0</span> again</span>
