@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flash 🇪🇸</title>
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Flash 🇪🇸" />
+  <meta name="theme-color" content="#0f0f13" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a24;
+      --border: #2e2e42;
+      --accent: #6c63ff;
+      --accent2: #ff6584;
+      --know: #22c55e;
+      --skip: #ef4444;
+      --text: #f0f0f8;
+      --muted: #888899;
+      --radius: 16px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 16px 32px;
+      gap: 20px;
+    }
+
+    header {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.5px; }
+    h1 span { color: var(--accent); }
+
+    .filter {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .filter button {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .filter button.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(108,99,255,0.12);
+    }
+
+    .progress-wrap {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    /* Card */
+    .scene {
+      width: 100%;
+      max-width: 480px;
+      aspect-ratio: 3/2;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card.flipped { transform: rotateY(180deg); }
+
+    .face {
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius);
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 28px;
+      border: 1.5px solid var(--border);
+      user-select: none;
+    }
+
+    .face.front { background: var(--surface); }
+
+    .face.back {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      transform: rotateY(180deg);
+      border-color: var(--accent);
+    }
+
+    .face .category {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+    }
+
+    .face .word {
+      font-size: clamp(1.8rem, 6vw, 2.6rem);
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .face.front .word { color: var(--text); }
+    .face.back .word { color: var(--accent); }
+
+    .face .hint {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .level-badge {
+      position: absolute;
+      bottom: 12px;
+      right: 14px;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+    }
+
+    .tap-hint {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* Action buttons */
+    .actions {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    .btn.know {
+      border-color: var(--know);
+      color: var(--know);
+      background: rgba(34,197,94,0.08);
+    }
+
+    .btn.skip {
+      border-color: var(--skip);
+      color: var(--skip);
+      background: rgba(239,68,68,0.08);
+    }
+
+    /* Nav */
+    .nav {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      width: 100%;
+      max-width: 480px;
+      justify-content: center;
+    }
+
+    .nav button {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav button:hover { border-color: var(--accent); color: var(--accent); }
+    .nav button:active { transform: scale(0.95); }
+
+    .nav .counter {
+      font-size: 0.85rem;
+      color: var(--muted);
+      min-width: 80px;
+      text-align: center;
+    }
+
+    /* Score */
+    .score {
+      display: flex;
+      gap: 20px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .score span { display: flex; align-items: center; gap: 4px; }
+    .score .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .score .dot.know { background: var(--know); }
+    .score .dot.skip { background: var(--skip); }
+
+    /* Done screen */
+    .done {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      max-width: 480px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 24px;
+      text-align: center;
+    }
+
+    .done.visible { display: flex; }
+    .done .big { font-size: 3rem; }
+    .done h2 { font-size: 1.4rem; }
+    .done p { color: var(--muted); font-size: 0.9rem; }
+    .done .restart {
+      margin-top: 8px;
+      padding: 12px 28px;
+      border-radius: 999px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .main { display: contents; }
+    .main.hidden > * { display: none !important; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Flash <span>🇪🇸</span></h1>
+    <div class="score">
+      <span><span class="dot know"></span><span id="score-know">0</span> got it</span>
+      <span><span class="dot skip"></span><span id="score-skip">0</span> again</span>
+    </div>
+  </header>
+
+  <div class="filter" id="filter"></div>
+
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span id="prog-label">Card 1 of 50</span>
+      <span id="prog-pct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="main" id="main">
+    <div class="scene" id="scene" onclick="flip()">
+      <div class="card" id="card">
+        <div class="face front">
+          <span class="category" id="front-cat"></span>
+          <span class="word" id="front-word"></span>
+          <span class="hint">Tap to reveal</span>
+          <span class="level-badge" id="level-badge"></span>
+        </div>
+        <div class="face back">
+          <span class="category" id="back-cat"></span>
+          <span class="word" id="back-word"></span>
+          <span class="hint" id="back-hint"></span>
+        </div>
+      </div>
+    </div>
+
+    <p class="tap-hint" id="tap-hint">Tap the card to flip · then mark yourself</p>
+
+    <div class="actions">
+      <button class="btn skip" onclick="mark('skip')">✗ Again</button>
+      <button class="btn know" onclick="mark('know')">✓ Got it</button>
+    </div>
+
+    <div class="nav">
+      <button onclick="prev()" title="Previous">←</button>
+      <span class="counter" id="counter">1 / 50</span>
+      <button onclick="next()" title="Next">→</button>
+      <button onclick="shuffle()" title="Shuffle">⇄</button>
+    </div>
+  </div>
+
+  <div class="done" id="done">
+    <div class="big" id="done-emoji">🎉</div>
+    <h2>Deck complete!</h2>
+    <p id="done-msg"></p>
+    <button class="restart" onclick="restart()">Start over</button>
+  </div>
+
+  <script src="cards.js"></script>
+  <script>
+    const CATEGORIES = ["All", ...new Set(CARDS.map(c => c.category))];
+    let deck = [];        // array of { card, level } where level is 1 or 2
+    let index = 0;
+    let scores = { know: 0, skip: 0 };
+    let completed = new Set(); // card objects fully mastered (passed level 2)
+    let originalSize = 0;
+    let activeCategory = "All";
+    let flipped = false;
+
+    function buildFilter() {
+      const wrap = document.getElementById("filter");
+      CATEGORIES.forEach(cat => {
+        const btn = document.createElement("button");
+        btn.textContent = cat;
+        if (cat === "All") btn.classList.add("active");
+        btn.onclick = () => setCategory(cat);
+        btn.dataset.cat = cat;
+        wrap.appendChild(btn);
+      });
+    }
+
+    function setCategory(cat) {
+      activeCategory = cat;
+      document.querySelectorAll("#filter button").forEach(b => {
+        b.classList.toggle("active", b.dataset.cat === cat);
+      });
+      restart();
+    }
+
+    function buildDeck() {
+      const source = activeCategory === "All" ? CARDS : CARDS.filter(c => c.category === activeCategory);
+      deck = source.map(card => ({ card, level: 1 })).sort(() => Math.random() - 0.5);
+      originalSize = deck.length;
+      index = 0;
+      completed = new Set();
+      scores = { know: 0, skip: 0 };
+    }
+
+    function render() {
+      const { card, level } = deck[index];
+      const front = level === 1 ? card.es : card.en;
+      const back  = level === 1 ? card.en : card.es;
+
+      document.getElementById("front-cat").textContent = card.category;
+      document.getElementById("front-word").textContent = front;
+      document.getElementById("back-cat").textContent = card.category;
+      document.getElementById("back-word").textContent = back;
+      document.getElementById("back-hint").textContent = front;
+      document.getElementById("level-badge").textContent = level === 1 ? "Level 1 · ES → EN" : "Level 2 · EN → ES";
+
+      const pct = Math.round(completed.size / originalSize * 100);
+      document.getElementById("prog-label").textContent = `${completed.size} of ${originalSize} mastered`;
+      document.getElementById("prog-pct").textContent = pct + "%";
+      document.getElementById("prog-fill").style.width = pct + "%";
+      document.getElementById("counter").textContent = `${index + 1} / ${deck.length}`;
+
+      document.getElementById("score-know").textContent = scores.know;
+      document.getElementById("score-skip").textContent = scores.skip;
+
+      flipped = false;
+      document.getElementById("card").classList.remove("flipped");
+      document.getElementById("tap-hint").style.opacity = "1";
+    }
+
+    function flip() {
+      flipped = !flipped;
+      document.getElementById("card").classList.toggle("flipped", flipped);
+      document.getElementById("tap-hint").style.opacity = flipped ? "0" : "1";
+    }
+
+    function reinsert(entry) {
+      deck.splice(index, 1);
+      const insertAt = index + 1 + Math.floor(Math.random() * Math.max(1, deck.length - index));
+      deck.splice(insertAt, 0, entry);
+    }
+
+    function mark(result) {
+      const entry = deck[index];
+      scores[result]++;
+      if (result === 'skip') {
+        reinsert(entry);
+        render();
+        return;
+      }
+      // "Got it"
+      if (entry.level === 1) {
+        // promote to level 2 and reinsert
+        reinsert({ card: entry.card, level: 2 });
+        render();
+        return;
+      }
+      // level 2 passed — fully mastered
+      completed.add(entry.card);
+      deck.splice(index, 1);
+      if (completed.size === originalSize) { showDone(); return; }
+      if (index >= deck.length) index = 0;
+      render();
+    }
+
+    function next() {
+      index = (index + 1) % deck.length;
+      render();
+    }
+
+    function prev() {
+      index = (index - 1 + deck.length) % deck.length;
+      render();
+    }
+
+    function shuffle() {
+      deck.sort(() => Math.random() - 0.5);
+      index = 0;
+      render();
+    }
+
+    function showDone() {
+      document.getElementById("main").classList.add("hidden");
+      const done = document.getElementById("done");
+      done.classList.add("visible");
+      const pct = Math.round(scores.know / deck.length * 100);
+      document.getElementById("done-emoji").textContent = pct >= 80 ? "🔥" : pct >= 50 ? "👍" : "💪";
+      document.getElementById("done-msg").textContent =
+        `You got ${scores.know} of ${deck.length} cards (${pct}%). ${pct >= 80 ? "Impressive!" : "Keep at it!"}`;
+    }
+
+    function restart() {
+      document.getElementById("main").classList.remove("hidden");
+      document.getElementById("done").classList.remove("visible");
+      buildDeck();
+      render();
+    }
+
+    buildFilter();
+    buildDeck();
+    render();
+  </script>
+</body>
+</html>
