@@ -15,6 +15,7 @@
 - Progress bar showing mastered cards out of total
 - Show level indicator per card (Level 1 · ES→EN / Level 2 · EN→ES)
 - End screen when all cards are mastered, with score summary and restart
+- Display a small version number at the bottom of the UI
 
 ## Non-functional
 
