@@ -23,3 +23,4 @@
 - Deployable to Vercel with zero config
 - Mobile-first, works in a phone browser
 - Installable as a PWA (manifest.json + iOS/Android meta tags) — add to homescreen works on both platforms
+- Respects the system light/dark mode setting (`prefers-color-scheme`) — dark by default, switches to a light palette automatically when iOS/Android/desktop is set to light mode

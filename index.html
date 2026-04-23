@@ -9,7 +9,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Flash 🇪🇸" />
-  <meta name="theme-color" content="#0f0f13" />
+  <meta name="theme-color" content="#0f0f13" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -24,6 +25,18 @@
       --text: #f0f0f8;
       --muted: #888899;
       --radius: 16px;
+      --back-face-bg: linear-gradient(135deg, #1a1a2e, #16213e);
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f5f5f7;
+        --surface: #ffffff;
+        --border: #d1d1d6;
+        --text: #1c1c1e;
+        --muted: #6e6e73;
+        --back-face-bg: linear-gradient(135deg, #ececff, #ddeeff);
+      }
     }
 
     body {
@@ -138,7 +151,7 @@
     .face.front { background: var(--surface); }
 
     .face.back {
-      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      background: var(--back-face-bg);
       transform: rotateY(180deg);
       border-color: var(--accent);
     }
@@ -358,7 +371,7 @@
     <button class="restart" onclick="restart()">Start over</button>
   </div>
 
-  <div style="text-align:center;padding:8px 0 4px;font-size:0.65rem;opacity:0.35;letter-spacing:0.05em;">v1.0.0</div>
+  <div style="text-align:center;padding:8px 0 4px;font-size:0.65rem;opacity:0.35;letter-spacing:0.05em;">v1.1.0</div>
 
   <script src="cards.js"></script>
   <script>
