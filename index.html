@@ -399,6 +399,14 @@
     }
 
     function render() {
+      flipped = false;
+      const cardEl = document.getElementById("card");
+      cardEl.style.transition = "none";
+      cardEl.classList.remove("flipped");
+      void cardEl.offsetWidth;
+      cardEl.style.transition = "";
+      document.getElementById("tap-hint").style.opacity = "1";
+
       const { card, level } = deck[index];
       const front = level === 1 ? card.es : card.nl;
       const back  = level === 1 ? card.nl : card.es;
@@ -419,13 +427,6 @@
       document.getElementById("score-know").textContent = scores.know;
       document.getElementById("score-skip").textContent = scores.skip;
 
-      flipped = false;
-      const cardEl = document.getElementById("card");
-      cardEl.style.transition = "none";
-      cardEl.classList.remove("flipped");
-      void cardEl.offsetWidth; // force reflow so transition suppression takes effect
-      cardEl.style.transition = "";
-      document.getElementById("tap-hint").style.opacity = "1";
     }
 
     function flip() {
