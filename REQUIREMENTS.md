@@ -16,6 +16,13 @@
 - Show level indicator per card (Level 1 · ES→EN / Level 2 · EN→ES)
 - End screen when all cards are mastered, with score summary and restart
 - Display a small version number at the bottom of the UI
+- **Spaced repetition (SM-2):** card review intervals are scheduled using the SM-2 algorithm stored in `localStorage`
+  - "Got it" at level 2 records a success and schedules the card for future review (interval grows with consecutive successes)
+  - Cards not yet mastered in a session remain due and reappear in the next session
+  - Session deck contains only cards due today (next review date ≤ today) plus any never-seen cards
+  - "All caught up!" screen shown when no cards are due for review
+  - End screen shows when the next batch of cards is due
+  - "Reset progress" button clears all SRS history from `localStorage`
 
 ## Non-functional
 

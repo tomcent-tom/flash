@@ -366,23 +366,64 @@
 
   <div class="done" id="done">
     <div class="big" id="done-emoji">🎉</div>
-    <h2>Deck complete!</h2>
+    <h2 id="done-h2">Deck complete!</h2>
     <p id="done-msg"></p>
-    <button class="restart" onclick="restart()">Start over</button>
+    <p id="done-next" style="font-size:0.8rem;color:var(--muted);margin-top:-4px;"></p>
+    <button class="restart" onclick="restart()">Study again</button>
+    <button onclick="resetProgress()" style="background:transparent;border:1.5px solid var(--skip);color:var(--skip);border-radius:999px;padding:8px 20px;font-size:0.8rem;font-weight:600;cursor:pointer;margin-top:4px;">Reset progress</button>
   </div>
 
-  <div style="text-align:center;padding:8px 0 4px;font-size:0.65rem;opacity:0.35;letter-spacing:0.05em;">v1.1.0</div>
+  <div style="text-align:center;padding:8px 0 4px;font-size:0.65rem;opacity:0.35;letter-spacing:0.05em;">v1.2.0</div>
 
   <script src="cards.js"></script>
   <script>
     const CATEGORIES = ["All", ...new Set(CARDS.map(c => c.category))];
-    let deck = [];        // array of { card, level } where level is 1 or 2
+    let deck = [];
     let index = 0;
     let scores = { know: 0, skip: 0 };
-    let completed = new Set(); // card objects fully mastered (passed level 2)
+    let completed = new Set();
     let originalSize = 0;
     let activeCategory = "All";
     let flipped = false;
+    let srsData = {};
+
+    const SRS_KEY = 'flash_srs';
+
+    function today() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function addDays(base, n) {
+      const d = new Date(base);
+      d.setDate(d.getDate() + n);
+      return d.toISOString().slice(0, 10);
+    }
+
+    function loadSRS() {
+      try { return JSON.parse(localStorage.getItem(SRS_KEY) || '{}'); } catch { return {}; }
+    }
+
+    function saveSRS() {
+      localStorage.setItem(SRS_KEY, JSON.stringify(srsData));
+    }
+
+    // SM-2 algorithm: quality 4 = "Got it", quality 0 = "Again"
+    function updateSM2(cardIdx, quality) {
+      const e = srsData[cardIdx] ? { ...srsData[cardIdx] } : { interval: 1, easiness: 2.5, repetitions: 0 };
+      if (quality < 3) {
+        e.repetitions = 0;
+        e.interval = 1;
+      } else {
+        if (e.repetitions === 0) e.interval = 1;
+        else if (e.repetitions === 1) e.interval = 6;
+        else e.interval = Math.round(e.interval * e.easiness);
+        e.repetitions += 1;
+      }
+      e.easiness = Math.max(1.3, e.easiness + 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+      e.nextReview = addDays(today(), e.interval);
+      srsData[cardIdx] = e;
+      saveSRS();
+    }
 
     function buildFilter() {
       const wrap = document.getElementById("filter");
@@ -405,8 +446,17 @@
     }
 
     function buildDeck() {
-      const source = activeCategory === "All" ? CARDS : CARDS.filter(c => c.category === activeCategory);
-      deck = source.map(card => ({ card, level: 1 })).sort(() => Math.random() - 0.5);
+      srsData = loadSRS();
+      const todayStr = today();
+      deck = CARDS
+        .map((card, idx) => ({ card, cardIdx: idx }))
+        .filter(({ card }) => activeCategory === "All" || card.category === activeCategory)
+        .filter(({ cardIdx }) => {
+          const e = srsData[cardIdx];
+          return !e || !e.nextReview || e.nextReview <= todayStr;
+        })
+        .sort(() => Math.random() - 0.5)
+        .map(({ card, cardIdx }) => ({ card, cardIdx, level: 1 }));
       originalSize = deck.length;
       index = 0;
       completed = new Set();
@@ -441,7 +491,6 @@
 
       document.getElementById("score-know").textContent = scores.know;
       document.getElementById("score-skip").textContent = scores.skip;
-
     }
 
     function flip() {
@@ -466,12 +515,12 @@
       }
       // "Got it"
       if (entry.level === 1) {
-        // promote to level 2 and reinsert
-        reinsert({ card: entry.card, level: 2 });
+        reinsert({ card: entry.card, cardIdx: entry.cardIdx, level: 2 });
         render();
         return;
       }
-      // level 2 passed — fully mastered
+      // level 2 passed — fully mastered; schedule next review via SM-2
+      updateSM2(entry.cardIdx, 4);
       completed.add(entry.card);
       deck.splice(index, 1);
       if (completed.size === originalSize) { showDone(); return; }
@@ -495,26 +544,67 @@
       render();
     }
 
+    function nextReviewSummary() {
+      const todayStr = today();
+      const byDate = {};
+      Object.values(srsData).forEach(e => {
+        if (e.nextReview && e.nextReview > todayStr) {
+          byDate[e.nextReview] = (byDate[e.nextReview] || 0) + 1;
+        }
+      });
+      const dates = Object.keys(byDate).sort();
+      if (!dates.length) return "";
+      const next = dates[0];
+      const daysUntil = Math.round((new Date(next) - new Date(todayStr)) / 86400000);
+      const count = byDate[next];
+      return daysUntil === 1
+        ? `${count} card${count !== 1 ? 's' : ''} due tomorrow.`
+        : `${count} card${count !== 1 ? 's' : ''} due in ${daysUntil} days.`;
+    }
+
     function showDone() {
       document.getElementById("main").classList.add("hidden");
-      const done = document.getElementById("done");
-      done.classList.add("visible");
-      const pct = Math.round(scores.know / deck.length * 100);
+      document.getElementById("done").classList.add("visible");
+      document.getElementById("done-h2").textContent = "Deck complete!";
+      document.getElementById("done-emoji").textContent = "🎉";
+
+      const total = scores.know + scores.skip;
+      const pct = total > 0 ? Math.round(scores.know / total * 100) : 100;
       document.getElementById("done-emoji").textContent = pct >= 80 ? "🔥" : pct >= 50 ? "👍" : "💪";
       document.getElementById("done-msg").textContent =
-        `You got ${scores.know} of ${deck.length} cards (${pct}%). ${pct >= 80 ? "Impressive!" : "Keep at it!"}`;
+        `${scores.know} correct of ${total} answers (${pct}%). ${pct >= 80 ? "Impressive!" : "Keep at it!"}`;
+      document.getElementById("done-next").textContent = nextReviewSummary();
+    }
+
+    function showNoDue() {
+      document.getElementById("main").classList.add("hidden");
+      document.getElementById("done").classList.add("visible");
+      document.getElementById("done-emoji").textContent = "✅";
+      document.getElementById("done-h2").textContent = "All caught up!";
+      document.getElementById("done-msg").textContent = "No cards are due for review today.";
+      document.getElementById("done-next").textContent =
+        nextReviewSummary() || "Complete your first session to start scheduling reviews!";
     }
 
     function restart() {
       document.getElementById("main").classList.remove("hidden");
       document.getElementById("done").classList.remove("visible");
       buildDeck();
+      if (deck.length === 0) { showNoDue(); return; }
       render();
+    }
+
+    function resetProgress() {
+      if (confirm("Clear all spaced repetition history? This cannot be undone.")) {
+        localStorage.removeItem(SRS_KEY);
+        srsData = {};
+        restart();
+      }
     }
 
     buildFilter();
     buildDeck();
-    render();
+    if (deck.length === 0) { showNoDue(); } else { render(); }
   </script>
 </body>
 </html>
