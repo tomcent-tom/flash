@@ -51,6 +51,134 @@
       gap: 20px;
     }
 
+    /* ── HOME SCREEN ──────────────────────────────────── */
+
+    .home-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .home-screen.hidden { display: none !important; }
+
+    .home-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding-top: 16px;
+    }
+
+    .home-hero img {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+    }
+
+    .home-hero h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .home-hero p {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .home-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .chip-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .chip.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(108,99,255,0.12);
+    }
+
+    .chip:active { transform: scale(0.95); }
+
+    .due-info {
+      font-size: 0.82rem;
+      color: var(--muted);
+      min-height: 20px;
+    }
+
+    .due-info.zero { opacity: 0.5; }
+
+    .start-btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: var(--radius);
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: -0.3px;
+    }
+
+    .start-btn:active { transform: scale(0.98); }
+
+    .start-btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+      transform: none;
+    }
+
+    .reset-link {
+      background: none;
+      border: none;
+      font-size: 0.72rem;
+      color: var(--muted);
+      cursor: pointer;
+      opacity: 0.45;
+      transition: opacity 0.15s;
+      padding: 4px;
+    }
+
+    .reset-link:hover { opacity: 0.85; }
+
+    /* ── STUDY SCREEN ─────────────────────────────────── */
+
+    /* transparent wrapper — children participate in body flex directly */
+    #study-wrapper { display: contents; }
+    #study-wrapper.hidden { display: none; }
+
     header {
       width: 100%;
       max-width: 480px;
@@ -59,33 +187,18 @@
       justify-content: space-between;
     }
 
-    h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
-    h1 img { width: 30px; height: 30px; border-radius: 8px; }
-
-    .filter {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      width: 100%;
-      max-width: 480px;
-    }
-
-    .filter button {
-      padding: 4px 10px;
-      border-radius: 999px;
+    .back-btn {
+      background: none;
       border: 1.5px solid var(--border);
-      background: transparent;
       color: var(--muted);
-      font-size: 0.75rem;
+      font-size: 0.78rem;
+      padding: 6px 12px;
+      border-radius: 999px;
       cursor: pointer;
       transition: all 0.15s;
     }
 
-    .filter button.active {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: rgba(108,99,255,0.12);
-    }
+    .back-btn:hover { border-color: var(--accent); color: var(--accent); }
 
     .progress-wrap {
       width: 100%;
@@ -314,66 +427,94 @@
   </style>
 </head>
 <body>
-  <header>
-    <h1><img src="/icon.svg" alt="⚡"> Flash</h1>
-    <div class="score">
-      <span><span class="dot know"></span><span id="score-know">0</span> got it</span>
-      <span><span class="dot skip"></span><span id="score-skip">0</span> again</span>
-    </div>
-  </header>
 
-  <div class="filter" id="filter"></div>
-
-  <div class="progress-wrap">
-    <div class="progress-meta">
-      <span id="prog-label">Card 1 of 50</span>
-      <span id="prog-pct">0%</span>
+  <!-- HOME SCREEN -->
+  <div class="home-screen" id="home-screen">
+    <div class="home-hero">
+      <img src="/icon.svg" alt="Flash">
+      <h1>Flash 🇪🇸</h1>
+      <p>Spanish · Dutch vocabulary</p>
     </div>
-    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+
+    <div class="home-section">
+      <div class="section-label">Theme</div>
+      <div class="chip-group" id="home-cats"></div>
+    </div>
+
+    <div class="home-section">
+      <div class="section-label">Cards per session</div>
+      <div class="chip-group" id="home-counts"></div>
+    </div>
+
+    <div class="due-info" id="due-info"></div>
+
+    <button class="start-btn" id="start-btn" onclick="startSession()">Start session →</button>
+
+    <button class="reset-link" onclick="resetProgress()">Reset progress</button>
   </div>
 
-  <div class="main" id="main">
-    <div class="scene" id="scene" onclick="flip()">
-      <div class="card" id="card">
-        <div class="face front">
-          <span class="category" id="front-cat"></span>
-          <span class="word" id="front-word"></span>
-          <span class="hint">Tap to reveal</span>
-          <span class="level-badge" id="level-badge"></span>
+  <!-- STUDY SCREEN -->
+  <div id="study-wrapper" class="hidden">
+    <header>
+      <button class="back-btn" onclick="goHome()">← Home</button>
+      <div class="score">
+        <span><span class="dot know"></span><span id="score-know">0</span> got it</span>
+        <span><span class="dot skip"></span><span id="score-skip">0</span> again</span>
+      </div>
+    </header>
+
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="prog-label">Card 1 of 50</span>
+        <span id="prog-pct">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="main" id="main">
+      <div class="scene" id="scene" onclick="flip()">
+        <div class="card" id="card">
+          <div class="face front">
+            <span class="category" id="front-cat"></span>
+            <span class="word" id="front-word"></span>
+            <span class="hint">Tap to reveal</span>
+            <span class="level-badge" id="level-badge"></span>
+          </div>
+          <div class="face back">
+            <span class="category" id="back-cat"></span>
+            <span class="word" id="back-word"></span>
+            <span class="hint" id="back-hint"></span>
+          </div>
         </div>
-        <div class="face back">
-          <span class="category" id="back-cat"></span>
-          <span class="word" id="back-word"></span>
-          <span class="hint" id="back-hint"></span>
-        </div>
+      </div>
+
+      <p class="tap-hint" id="tap-hint">Tap the card to flip · then mark yourself</p>
+
+      <div class="actions">
+        <button class="btn skip" onclick="mark('skip')">✗ Again</button>
+        <button class="btn know" onclick="mark('know')">✓ Got it</button>
+      </div>
+
+      <div class="nav">
+        <button onclick="prev()" title="Previous">←</button>
+        <span class="counter" id="counter">1 / 50</span>
+        <button onclick="next()" title="Next">→</button>
+        <button onclick="shuffle()" title="Shuffle">⇄</button>
       </div>
     </div>
 
-    <p class="tap-hint" id="tap-hint">Tap the card to flip · then mark yourself</p>
-
-    <div class="actions">
-      <button class="btn skip" onclick="mark('skip')">✗ Again</button>
-      <button class="btn know" onclick="mark('know')">✓ Got it</button>
-    </div>
-
-    <div class="nav">
-      <button onclick="prev()" title="Previous">←</button>
-      <span class="counter" id="counter">1 / 50</span>
-      <button onclick="next()" title="Next">→</button>
-      <button onclick="shuffle()" title="Shuffle">⇄</button>
+    <div class="done" id="done">
+      <div class="big" id="done-emoji">🎉</div>
+      <h2 id="done-h2">Deck complete!</h2>
+      <p id="done-msg"></p>
+      <p id="done-next" style="font-size:0.8rem;color:var(--muted);margin-top:-4px;"></p>
+      <button class="restart" onclick="restart()">Study again</button>
+      <button onclick="goHome()" style="background:transparent;border:1.5px solid var(--border);color:var(--muted);border-radius:999px;padding:8px 20px;font-size:0.8rem;font-weight:600;cursor:pointer;margin-top:4px;">← Back to home</button>
+      <button onclick="resetProgress()" style="background:transparent;border:1.5px solid var(--skip);color:var(--skip);border-radius:999px;padding:8px 20px;font-size:0.8rem;font-weight:600;cursor:pointer;margin-top:4px;">Reset progress</button>
     </div>
   </div>
 
-  <div class="done" id="done">
-    <div class="big" id="done-emoji">🎉</div>
-    <h2 id="done-h2">Deck complete!</h2>
-    <p id="done-msg"></p>
-    <p id="done-next" style="font-size:0.8rem;color:var(--muted);margin-top:-4px;"></p>
-    <button class="restart" onclick="restart()">Study again</button>
-    <button onclick="resetProgress()" style="background:transparent;border:1.5px solid var(--skip);color:var(--skip);border-radius:999px;padding:8px 20px;font-size:0.8rem;font-weight:600;cursor:pointer;margin-top:4px;">Reset progress</button>
-  </div>
-
-  <div style="text-align:center;padding:8px 0 4px;font-size:0.65rem;opacity:0.35;letter-spacing:0.05em;">v1.2.0</div>
+  <div style="text-align:center;padding:8px 0 4px;font-size:0.65rem;opacity:0.35;letter-spacing:0.05em;">v1.3.0</div>
 
   <script src="cards.js"></script>
   <script>
@@ -384,6 +525,7 @@
     let completed = new Set();
     let originalSize = 0;
     let activeCategory = "All";
+    let sessionLimit = 10;
     let flipped = false;
     let srsData = {};
 
@@ -407,7 +549,6 @@
       localStorage.setItem(SRS_KEY, JSON.stringify(srsData));
     }
 
-    // SM-2 algorithm: quality 4 = "Got it", quality 0 = "Again"
     function updateSM2(cardIdx, quality) {
       const e = srsData[cardIdx] ? { ...srsData[cardIdx] } : { interval: 1, easiness: 2.5, repetitions: 0 };
       if (quality < 3) {
@@ -425,38 +566,101 @@
       saveSRS();
     }
 
-    function buildFilter() {
-      const wrap = document.getElementById("filter");
-      CATEGORIES.forEach(cat => {
-        const btn = document.createElement("button");
-        btn.textContent = cat;
-        if (cat === "All") btn.classList.add("active");
-        btn.onclick = () => setCategory(cat);
-        btn.dataset.cat = cat;
-        wrap.appendChild(btn);
-      });
+    function countDue(cat) {
+      const todayStr = today();
+      return CARDS.filter((card, idx) => {
+        if (cat !== "All" && card.category !== cat) return false;
+        const e = srsData[idx];
+        return !e || !e.nextReview || e.nextReview <= todayStr;
+      }).length;
     }
 
-    function setCategory(cat) {
-      activeCategory = cat;
-      document.querySelectorAll("#filter button").forEach(b => {
-        b.classList.toggle("active", b.dataset.cat === cat);
+    function buildHomeScreen() {
+      srsData = loadSRS();
+
+      const catsEl = document.getElementById("home-cats");
+      catsEl.innerHTML = "";
+      CATEGORIES.forEach(cat => {
+        const btn = document.createElement("button");
+        btn.className = "chip" + (cat === activeCategory ? " active" : "");
+        btn.textContent = cat;
+        btn.onclick = () => {
+          activeCategory = cat;
+          document.querySelectorAll("#home-cats .chip").forEach(b =>
+            b.classList.toggle("active", b.textContent === cat));
+          updateDueInfo();
+        };
+        catsEl.appendChild(btn);
       });
-      restart();
+
+      const countsEl = document.getElementById("home-counts");
+      countsEl.innerHTML = "";
+      [5, 10, 15, 20, "All"].forEach(n => {
+        const btn = document.createElement("button");
+        const val = n === "All" ? Infinity : n;
+        btn.className = "chip" + (val === sessionLimit ? " active" : "");
+        btn.textContent = n;
+        btn.onclick = () => {
+          sessionLimit = val;
+          document.querySelectorAll("#home-counts .chip").forEach(b =>
+            b.classList.toggle("active", b === btn));
+          updateDueInfo();
+        };
+        countsEl.appendChild(btn);
+      });
+
+      updateDueInfo();
+    }
+
+    function updateDueInfo() {
+      const due = countDue(activeCategory);
+      const el = document.getElementById("due-info");
+      const startBtn = document.getElementById("start-btn");
+      if (due === 0) {
+        el.textContent = "No cards due today";
+        el.className = "due-info zero";
+        startBtn.disabled = true;
+      } else {
+        const showing = sessionLimit === Infinity ? due : Math.min(due, sessionLimit);
+        el.textContent = `${due} card${due !== 1 ? "s" : ""} due today · studying ${showing}`;
+        el.className = "due-info";
+        startBtn.disabled = false;
+      }
+    }
+
+    function startSession() {
+      document.getElementById("home-screen").classList.add("hidden");
+      document.getElementById("study-wrapper").classList.remove("hidden");
+      buildDeck();
+      if (deck.length === 0) { showNoDue(); return; }
+      render();
+    }
+
+    function goHome() {
+      document.getElementById("study-wrapper").classList.add("hidden");
+      document.getElementById("home-screen").classList.remove("hidden");
+      document.getElementById("done").classList.remove("visible");
+      document.getElementById("main").classList.remove("hidden");
+      buildHomeScreen();
     }
 
     function buildDeck() {
       srsData = loadSRS();
       const todayStr = today();
-      deck = CARDS
+      let cards = CARDS
         .map((card, idx) => ({ card, cardIdx: idx }))
         .filter(({ card }) => activeCategory === "All" || card.category === activeCategory)
         .filter(({ cardIdx }) => {
           const e = srsData[cardIdx];
           return !e || !e.nextReview || e.nextReview <= todayStr;
         })
-        .sort(() => Math.random() - 0.5)
-        .map(({ card, cardIdx }) => ({ card, cardIdx, level: 1 }));
+        .sort(() => Math.random() - 0.5);
+
+      if (sessionLimit !== Infinity) {
+        cards = cards.slice(0, sessionLimit);
+      }
+
+      deck = cards.map(({ card, cardIdx }) => ({ card, cardIdx, level: 1 }));
       originalSize = deck.length;
       index = 0;
       completed = new Set();
@@ -513,13 +717,11 @@
         render();
         return;
       }
-      // "Got it"
       if (entry.level === 1) {
         reinsert({ card: entry.card, cardIdx: entry.cardIdx, level: 2 });
         render();
         return;
       }
-      // level 2 passed — fully mastered; schedule next review via SM-2
       updateSM2(entry.cardIdx, 4);
       completed.add(entry.card);
       deck.splice(index, 1);
@@ -565,12 +767,11 @@
     function showDone() {
       document.getElementById("main").classList.add("hidden");
       document.getElementById("done").classList.add("visible");
-      document.getElementById("done-h2").textContent = "Deck complete!";
-      document.getElementById("done-emoji").textContent = "🎉";
 
       const total = scores.know + scores.skip;
       const pct = total > 0 ? Math.round(scores.know / total * 100) : 100;
       document.getElementById("done-emoji").textContent = pct >= 80 ? "🔥" : pct >= 50 ? "👍" : "💪";
+      document.getElementById("done-h2").textContent = "Deck complete!";
       document.getElementById("done-msg").textContent =
         `${scores.know} correct of ${total} answers (${pct}%). ${pct >= 80 ? "Impressive!" : "Keep at it!"}`;
       document.getElementById("done-next").textContent = nextReviewSummary();
@@ -598,13 +799,15 @@
       if (confirm("Clear all spaced repetition history? This cannot be undone.")) {
         localStorage.removeItem(SRS_KEY);
         srsData = {};
-        restart();
+        if (!document.getElementById("home-screen").classList.contains("hidden")) {
+          buildHomeScreen();
+        } else {
+          restart();
+        }
       }
     }
 
-    buildFilter();
-    buildDeck();
-    if (deck.length === 0) { showNoDue(); } else { render(); }
+    buildHomeScreen();
   </script>
 </body>
 </html>

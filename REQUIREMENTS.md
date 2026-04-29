@@ -9,7 +9,13 @@
   - Passing level 1 promotes the card to level 2 (reinserted randomly)
   - Passing level 2 removes the card as fully mastered
 - **"Again"** reinserts the card at a random later position at the same level
-- Filter cards by category (All, Pregnancy, Hospital, Parenting)
+- **Home screen** shown on launch for session configuration before studying begins
+  - Select theme (category): All, Pregnancy, Hospital, Parenting
+  - Select cards per session: 5, 10, 15, 20, or All due cards
+  - Shows how many cards are due today for the selected theme
+  - Start button disabled when no cards are due
+- Session deck is drawn randomly from due cards, capped to the selected card count
+- Navigate back to home from the study screen (← Home button) or done screen (← Back to home)
 - Navigate manually with prev/next and shuffle buttons
 - Track score (got it / again counts)
 - Progress bar showing mastered cards out of total
