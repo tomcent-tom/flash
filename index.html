@@ -446,6 +446,8 @@
       <div class="chip-group" id="home-counts"></div>
     </div>
 
+    <div class="due-info" id="home-stats" style="font-size:0.78rem;"></div>
+
     <div class="due-info" id="due-info"></div>
 
     <button class="start-btn" id="start-btn" onclick="startSession()">Start session →</button>
@@ -514,7 +516,7 @@
     </div>
   </div>
 
-  <div style="text-align:center;padding:8px 0 4px;font-size:0.65rem;opacity:0.35;letter-spacing:0.05em;">v1.3.0</div>
+  <div style="text-align:center;padding:8px 0 4px;font-size:0.65rem;opacity:0.35;letter-spacing:0.05em;">v1.4.0</div>
 
   <script src="cards.js"></script>
   <script>
@@ -528,8 +530,10 @@
     let sessionLimit = 10;
     let flipped = false;
     let srsData = {};
+    let allTimeScores = { know: 0, skip: 0 };
 
     const SRS_KEY = 'flash_srs';
+    const SCORE_KEY = 'flash_scores';
 
     function today() {
       return new Date().toISOString().slice(0, 10);
@@ -547,6 +551,14 @@
 
     function saveSRS() {
       localStorage.setItem(SRS_KEY, JSON.stringify(srsData));
+    }
+
+    function loadScores() {
+      try { return JSON.parse(localStorage.getItem(SCORE_KEY) || '{"know":0,"skip":0}'); } catch { return { know: 0, skip: 0 }; }
+    }
+
+    function saveScores() {
+      localStorage.setItem(SCORE_KEY, JSON.stringify(allTimeScores));
     }
 
     function updateSM2(cardIdx, quality) {
@@ -577,6 +589,8 @@
 
     function buildHomeScreen() {
       srsData = loadSRS();
+      allTimeScores = loadScores();
+      renderHomeStats();
 
       const catsEl = document.getElementById("home-cats");
       catsEl.innerHTML = "";
@@ -610,6 +624,14 @@
       });
 
       updateDueInfo();
+    }
+
+    function renderHomeStats() {
+      const el = document.getElementById("home-stats");
+      const total = allTimeScores.know + allTimeScores.skip;
+      if (total === 0) { el.textContent = "No sessions yet"; return; }
+      const pct = Math.round(allTimeScores.know / total * 100);
+      el.textContent = `${allTimeScores.know} got it · ${allTimeScores.skip} again · ${pct}% accuracy (all time)`;
     }
 
     function updateDueInfo() {
@@ -712,6 +734,8 @@
     function mark(result) {
       const entry = deck[index];
       scores[result]++;
+      allTimeScores[result]++;
+      saveScores();
       if (result === 'skip') {
         reinsert(entry);
         render();
@@ -796,9 +820,11 @@
     }
 
     function resetProgress() {
-      if (confirm("Clear all spaced repetition history? This cannot be undone.")) {
+      if (confirm("Clear all spaced repetition history and scores? This cannot be undone.")) {
         localStorage.removeItem(SRS_KEY);
+        localStorage.removeItem(SCORE_KEY);
         srsData = {};
+        allTimeScores = { know: 0, skip: 0 };
         if (!document.getElementById("home-screen").classList.contains("hidden")) {
           buildHomeScreen();
         } else {
