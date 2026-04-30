@@ -32,7 +32,7 @@
   - End screen shows when the next batch of cards is due
   - "Reset progress" button clears all SRS history from `localStorage`
 
-- **Spanish Tutor chat interface:** a dedicated chat screen powered by the Gemini API (`gemini-2.0-flash`)
+- **Spanish Tutor chat interface:** a dedicated chat screen powered by the Gemini API (`gemini-2.5-flash`)
   - Accessible via "💬 Spanish Tutor" button on the home screen
   - User provides their own Google AI API key, stored in `localStorage` (`flash_gemini_key`)
   - System prompt tunes Gemini as a Spanish/Dutch vocabulary tutor

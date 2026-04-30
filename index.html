@@ -874,7 +874,7 @@
     </div>
   </div>
 
-  <div style="text-align:center;padding:8px 0 4px;font-size:0.65rem;opacity:0.35;letter-spacing:0.05em;">v1.5.1</div>
+  <div style="text-align:center;padding:8px 0 4px;font-size:0.65rem;opacity:0.35;letter-spacing:0.05em;">v1.5.2</div>
 
   <script src="cards.js"></script>
   <script>
@@ -1335,7 +1335,7 @@ Respond in the same language the user writes in (Dutch, English, or Spanish).`;
         parts: [{ text: msg.content }]
       }));
       const res = await fetch(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + apiKey,
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey,
         {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
