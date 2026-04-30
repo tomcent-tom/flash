@@ -833,11 +833,11 @@
   <!-- API KEY MODAL -->
   <div class="modal-overlay" id="api-key-modal" onclick="if(event.target===this)closeApiKeyModal()">
     <div class="modal-sheet">
-      <h3>Claude API Key</h3>
-      <p>Enter your Anthropic API key. It's stored only on your device and sent directly to Anthropic's API.</p>
+      <h3>Gemini API Key</h3>
+      <p>Enter your Google AI API key. It's stored only on your device and sent directly to Google's API.</p>
       <div class="form-field">
         <label>API Key</label>
-        <input type="password" id="api-key-input" placeholder="sk-ant-…" autocomplete="off" />
+        <input type="password" id="api-key-input" placeholder="AIza…" autocomplete="off" />
       </div>
       <div class="modal-actions">
         <button class="modal-cancel" onclick="closeApiKeyModal()">Cancel</button>
@@ -874,12 +874,12 @@
     </div>
   </div>
 
-  <div style="text-align:center;padding:8px 0 4px;font-size:0.65rem;opacity:0.35;letter-spacing:0.05em;">v1.5.0</div>
+  <div style="text-align:center;padding:8px 0 4px;font-size:0.65rem;opacity:0.35;letter-spacing:0.05em;">v1.5.1</div>
 
   <script src="cards.js"></script>
   <script>
     const CUSTOM_KEY = 'flash_custom_cards';
-    const API_KEY_STORAGE = 'flash_claude_key';
+    const API_KEY_STORAGE = 'flash_gemini_key';
 
     // Append persisted custom cards to CARDS before computing categories
     try { JSON.parse(localStorage.getItem(CUSTOM_KEY) || '[]').forEach(c => CARDS.push(c)); } catch {}
@@ -1248,7 +1248,7 @@ Respond in the same language the user writes in (Dutch, English, or Spanish).`;
         hint.style.cssText = 'margin:auto;text-align:center;color:var(--muted);font-size:0.82rem;padding:32px 16px;line-height:1.6;';
         hint.textContent = localStorage.getItem(API_KEY_STORAGE)
           ? 'Start a conversation…'
-          : 'Tap 🔑 above to add your Anthropic API key.';
+          : 'Tap 🔑 above to add your Google AI API key.';
         el.appendChild(hint);
         return;
       }
@@ -1302,7 +1302,7 @@ Respond in the same language the user writes in (Dutch, English, or Spanish).`;
       chatPending = true;
       document.getElementById('chat-send').disabled = true;
       try {
-        const reply = await callClaude(key);
+        const reply = await callGemini(key);
         chatHistory.push({ role: 'assistant', content: reply });
       } catch (err) {
         chatHistory.push({ role: 'assistant', content: '⚠️ ' + err.message });
@@ -1329,29 +1329,29 @@ Respond in the same language the user writes in (Dutch, English, or Spanish).`;
       if (t) t.remove();
     }
 
-    async function callClaude(apiKey) {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'content-type': 'application/json',
-          'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        body: JSON.stringify({
-          model: 'claude-haiku-4-5-20251001',
-          max_tokens: 1024,
-          system: SYSTEM_PROMPT,
-          messages: chatHistory
-        })
-      });
+    async function callGemini(apiKey) {
+      const contents = chatHistory.map(msg => ({
+        role: msg.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: msg.content }]
+      }));
+      const res = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + apiKey,
+        {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+            contents
+          })
+        }
+      );
       if (!res.ok) {
         let msg = 'HTTP ' + res.status;
         try { msg = (await res.json()).error?.message || msg; } catch {}
         throw new Error(msg);
       }
       const data = await res.json();
-      return data.content[0].text;
+      return data.candidates[0].content.parts[0].text;
     }
 
     function handleChatKey(e) {

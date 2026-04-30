@@ -32,11 +32,11 @@
   - End screen shows when the next batch of cards is due
   - "Reset progress" button clears all SRS history from `localStorage`
 
-- **Spanish Tutor chat interface:** a dedicated chat screen powered by the Claude API (Haiku model)
+- **Spanish Tutor chat interface:** a dedicated chat screen powered by the Gemini API (`gemini-2.0-flash`)
   - Accessible via "💬 Spanish Tutor" button on the home screen
-  - User provides their own Anthropic API key, stored in `localStorage` (`flash_claude_key`)
-  - System prompt tunes Claude as a Spanish/Dutch vocabulary tutor
-  - Claude tags vocabulary suggestions as `[VOCAB: Spanish | Dutch | Category]`; these are parsed and rendered as "💾 Save to deck" chips on assistant messages
+  - User provides their own Google AI API key, stored in `localStorage` (`flash_gemini_key`)
+  - System prompt tunes Gemini as a Spanish/Dutch vocabulary tutor
+  - Gemini tags vocabulary suggestions as `[VOCAB: Spanish | Dutch | Category]`; these are parsed and rendered as "💾 Save to deck" chips on assistant messages
   - "＋ Add word to deck" button always visible at bottom of chat screen; opens a bottom-sheet form to manually add a Spanish/Dutch word with a category
   - Custom words are persisted in `localStorage` (`flash_custom_cards`) and merged into the card deck on page load, making them immediately available for spaced-repetition study
   - Chat history persists within the page session but is not saved across reloads
