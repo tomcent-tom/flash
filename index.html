@@ -424,6 +424,300 @@
 
     .main { display: contents; }
     .main.hidden > * { display: none !important; }
+
+    /* ── CHAT SCREEN ─────────────────────────────────── */
+
+    .chat-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: var(--bg);
+      flex-direction: column;
+    }
+
+    .chat-screen.visible { display: flex; }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      flex-shrink: 0;
+    }
+
+    .chat-header h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      flex: 1;
+      text-align: center;
+      margin: 0;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .msg {
+      max-width: 82%;
+      padding: 11px 14px;
+      border-radius: 18px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .msg.user {
+      background: var(--accent);
+      color: #fff;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg.assistant {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg-text { white-space: pre-wrap; }
+
+    .vocab-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .vocab-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(108,99,255,0.15);
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      padding: 4px 10px 4px 8px;
+      font-size: 0.72rem;
+      color: var(--accent);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+
+    .vocab-chip:active { transform: scale(0.93); }
+
+    .typing-dots {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      padding: 12px 16px;
+    }
+
+    .typing-dots span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--muted);
+      animation: typingBlink 1.2s infinite;
+    }
+
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingBlink {
+      0%, 80%, 100% { opacity: 0.25; transform: scale(0.8); }
+      40% { opacity: 1; transform: scale(1); }
+    }
+
+    .chat-bottom {
+      flex-shrink: 0;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+      padding: 10px 16px;
+      padding-bottom: max(10px, env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .chat-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 22px;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      color: var(--text);
+      resize: none;
+      max-height: 110px;
+      min-height: 42px;
+      font-family: inherit;
+      outline: none;
+      line-height: 1.4;
+    }
+
+    .chat-input:focus { border-color: var(--accent); }
+    .chat-input::placeholder { color: var(--muted); }
+
+    .chat-send {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chat-send:active { transform: scale(0.9); }
+    .chat-send:disabled { opacity: 0.35; cursor: default; transform: none; }
+
+    .add-word-btn {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      border-radius: 999px;
+      padding: 7px 16px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      cursor: pointer;
+      align-self: flex-start;
+      transition: all 0.15s;
+    }
+
+    .add-word-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .add-word-btn:active { transform: scale(0.95); }
+
+    /* ── SECONDARY HOME BUTTON ───────────────────────── */
+
+    .chat-open-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .chat-open-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .chat-open-btn:active { transform: scale(0.98); }
+
+    /* ── MODAL / BOTTOM SHEET ────────────────────────── */
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.55);
+      align-items: flex-end;
+    }
+
+    .modal-overlay.visible { display: flex; }
+
+    .modal-sheet {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+      padding: 24px 20px;
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      animation: slideUp 0.22s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-sheet h3 { font-size: 1.05rem; font-weight: 700; }
+    .modal-sheet p { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+
+    .form-field { display: flex; flex-direction: column; gap: 6px; }
+
+    .form-field label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .form-field input,
+    .form-field select {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 0.95rem;
+      color: var(--text);
+      font-family: inherit;
+      outline: none;
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .form-field input:focus,
+    .form-field select:focus { border-color: var(--accent); }
+
+    .modal-actions { display: flex; gap: 10px; margin-top: 4px; }
+
+    .modal-cancel {
+      flex: 1;
+      padding: 13px;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .modal-cancel:active { transform: scale(0.97); }
+
+    .modal-save {
+      flex: 2;
+      padding: 13px;
+      border-radius: var(--radius);
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .modal-save:active { transform: scale(0.97); }
   </style>
 </head>
 <body>
@@ -446,9 +740,13 @@
       <div class="chip-group" id="home-counts"></div>
     </div>
 
+    <div class="due-info" id="home-stats" style="font-size:0.78rem;"></div>
+
     <div class="due-info" id="due-info"></div>
 
     <button class="start-btn" id="start-btn" onclick="startSession()">Start session →</button>
+
+    <button class="chat-open-btn" onclick="openChat()">💬 Spanish Tutor</button>
 
     <button class="reset-link" onclick="resetProgress()">Reset progress</button>
   </div>
@@ -514,11 +812,79 @@
     </div>
   </div>
 
-  <div style="text-align:center;padding:8px 0 4px;font-size:0.65rem;opacity:0.35;letter-spacing:0.05em;">v1.3.0</div>
+  <!-- CHAT SCREEN -->
+  <div class="chat-screen" id="chat-screen">
+    <div class="chat-header">
+      <button class="back-btn" onclick="closeChat()">← Home</button>
+      <h2>Spanish Tutor 🇪🇸</h2>
+      <button class="back-btn" onclick="showApiKeyModal()">🔑</button>
+    </div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-bottom">
+      <button class="add-word-btn" onclick="showAddWordModal()">＋ Add word to deck</button>
+      <div class="chat-input-row">
+        <textarea class="chat-input" id="chat-input" placeholder="Ask about Spanish…" rows="1"
+          onkeydown="handleChatKey(event)" oninput="autoResizeInput(this)"></textarea>
+        <button class="chat-send" id="chat-send" onclick="sendChatMessage()">↑</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- API KEY MODAL -->
+  <div class="modal-overlay" id="api-key-modal" onclick="if(event.target===this)closeApiKeyModal()">
+    <div class="modal-sheet">
+      <h3>Claude API Key</h3>
+      <p>Enter your Anthropic API key. It's stored only on your device and sent directly to Anthropic's API.</p>
+      <div class="form-field">
+        <label>API Key</label>
+        <input type="password" id="api-key-input" placeholder="sk-ant-…" autocomplete="off" />
+      </div>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeApiKeyModal()">Cancel</button>
+        <button class="modal-save" onclick="saveApiKey()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD WORD MODAL -->
+  <div class="modal-overlay" id="add-word-modal" onclick="if(event.target===this)closeAddWordModal()">
+    <div class="modal-sheet">
+      <h3>Add to flashcard deck</h3>
+      <div class="form-field">
+        <label>Spanish</label>
+        <input type="text" id="add-es" placeholder="e.g. El embarazo" autocomplete="off" />
+      </div>
+      <div class="form-field">
+        <label>Dutch</label>
+        <input type="text" id="add-nl" placeholder="e.g. Zwangerschap" autocomplete="off" />
+      </div>
+      <div class="form-field">
+        <label>Category</label>
+        <select id="add-cat">
+          <option value="Pregnancy">Pregnancy</option>
+          <option value="Hospital">Hospital</option>
+          <option value="Parenting">Parenting</option>
+          <option value="General">General</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeAddWordModal()">Cancel</button>
+        <button class="modal-save" onclick="saveNewWord()">Add to deck</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:8px 0 4px;font-size:0.65rem;opacity:0.35;letter-spacing:0.05em;">v1.5.0</div>
 
   <script src="cards.js"></script>
   <script>
-    const CATEGORIES = ["All", ...new Set(CARDS.map(c => c.category))];
+    const CUSTOM_KEY = 'flash_custom_cards';
+    const API_KEY_STORAGE = 'flash_claude_key';
+
+    // Append persisted custom cards to CARDS before computing categories
+    try { JSON.parse(localStorage.getItem(CUSTOM_KEY) || '[]').forEach(c => CARDS.push(c)); } catch {}
+
+    let CATEGORIES = ["All", ...new Set(CARDS.map(c => c.category))];
     let deck = [];
     let index = 0;
     let scores = { know: 0, skip: 0 };
@@ -528,8 +894,10 @@
     let sessionLimit = 10;
     let flipped = false;
     let srsData = {};
+    let allTimeScores = { know: 0, skip: 0 };
 
     const SRS_KEY = 'flash_srs';
+    const SCORE_KEY = 'flash_scores';
 
     function today() {
       return new Date().toISOString().slice(0, 10);
@@ -547,6 +915,14 @@
 
     function saveSRS() {
       localStorage.setItem(SRS_KEY, JSON.stringify(srsData));
+    }
+
+    function loadScores() {
+      try { return JSON.parse(localStorage.getItem(SCORE_KEY) || '{"know":0,"skip":0}'); } catch { return { know: 0, skip: 0 }; }
+    }
+
+    function saveScores() {
+      localStorage.setItem(SCORE_KEY, JSON.stringify(allTimeScores));
     }
 
     function updateSM2(cardIdx, quality) {
@@ -577,6 +953,8 @@
 
     function buildHomeScreen() {
       srsData = loadSRS();
+      allTimeScores = loadScores();
+      renderHomeStats();
 
       const catsEl = document.getElementById("home-cats");
       catsEl.innerHTML = "";
@@ -610,6 +988,14 @@
       });
 
       updateDueInfo();
+    }
+
+    function renderHomeStats() {
+      const el = document.getElementById("home-stats");
+      const total = allTimeScores.know + allTimeScores.skip;
+      if (total === 0) { el.textContent = "No sessions yet"; return; }
+      const pct = Math.round(allTimeScores.know / total * 100);
+      el.textContent = `${allTimeScores.know} got it · ${allTimeScores.skip} again · ${pct}% accuracy (all time)`;
     }
 
     function updateDueInfo() {
@@ -712,6 +1098,8 @@
     function mark(result) {
       const entry = deck[index];
       scores[result]++;
+      allTimeScores[result]++;
+      saveScores();
       if (result === 'skip') {
         reinsert(entry);
         render();
@@ -796,15 +1184,235 @@
     }
 
     function resetProgress() {
-      if (confirm("Clear all spaced repetition history? This cannot be undone.")) {
+      if (confirm("Clear all spaced repetition history and scores? This cannot be undone.")) {
         localStorage.removeItem(SRS_KEY);
+        localStorage.removeItem(SCORE_KEY);
         srsData = {};
+        allTimeScores = { know: 0, skip: 0 };
         if (!document.getElementById("home-screen").classList.contains("hidden")) {
           buildHomeScreen();
         } else {
           restart();
         }
       }
+    }
+
+    // ── CHAT ─────────────────────────────────────────────
+
+    let chatHistory = [];
+    let chatPending = false;
+
+    const SYSTEM_PROMPT = `You are a Spanish language tutor helping a Dutch speaker learn Spanish, focusing on vocabulary related to pregnancy, childbirth, hospital, and parenting.
+
+You help with translations (Spanish ↔ Dutch), grammar, pronunciation, and context. Be concise and encouraging.
+
+When you introduce vocabulary worth memorising, tag each term like this:
+[VOCAB: Spanish term | Dutch translation | Category]
+Category must be one of: Pregnancy, Hospital, Parenting, General
+
+These tags are parsed by the app to show "Save to deck" buttons. Use them whenever you introduce useful vocabulary.
+
+Respond in the same language the user writes in (Dutch, English, or Spanish).`;
+
+    function openChat() {
+      document.getElementById('home-screen').classList.add('hidden');
+      document.getElementById('chat-screen').classList.add('visible');
+      const key = localStorage.getItem(API_KEY_STORAGE);
+      if (!key) {
+        showApiKeyModal();
+      } else if (chatHistory.length === 0) {
+        appendWelcome();
+      }
+      renderChatMessages();
+    }
+
+    function closeChat() {
+      document.getElementById('chat-screen').classList.remove('visible');
+      document.getElementById('home-screen').classList.remove('hidden');
+      buildHomeScreen();
+    }
+
+    function appendWelcome() {
+      chatHistory.push({
+        role: 'assistant',
+        content: 'Hola! 👋 Ik ben je Spaanse taaltutor. Vraag me om vertalingen, grammatica-uitleg of woordcontext. Gebruik de knop "＋ Add word to deck" om woorden op te slaan in je flashcard-deck.'
+      });
+    }
+
+    function renderChatMessages() {
+      const el = document.getElementById('chat-messages');
+      if (!el) return;
+      el.innerHTML = '';
+      if (chatHistory.length === 0) {
+        const hint = document.createElement('p');
+        hint.style.cssText = 'margin:auto;text-align:center;color:var(--muted);font-size:0.82rem;padding:32px 16px;line-height:1.6;';
+        hint.textContent = localStorage.getItem(API_KEY_STORAGE)
+          ? 'Start a conversation…'
+          : 'Tap 🔑 above to add your Anthropic API key.';
+        el.appendChild(hint);
+        return;
+      }
+      chatHistory.forEach(msg => {
+        const wrap = document.createElement('div');
+        wrap.className = 'msg ' + msg.role;
+        const parts = parseVocabTags(msg.content);
+        const textEl = document.createElement('div');
+        textEl.className = 'msg-text';
+        textEl.textContent = parts.text;
+        wrap.appendChild(textEl);
+        if (parts.vocabs.length > 0 && msg.role === 'assistant') {
+          const chips = document.createElement('div');
+          chips.className = 'vocab-chips';
+          parts.vocabs.forEach(v => {
+            const chip = document.createElement('button');
+            chip.className = 'vocab-chip';
+            chip.textContent = '💾 ' + v.es;
+            chip.onclick = () => showAddWordModal(v.es, v.nl, v.category);
+            chips.appendChild(chip);
+          });
+          wrap.appendChild(chips);
+        }
+        el.appendChild(wrap);
+      });
+      el.scrollTop = el.scrollHeight;
+    }
+
+    function parseVocabTags(content) {
+      const vocabs = [];
+      const re = /\[VOCAB:\s*([^|\]]+)\|([^|\]]+)\|([^\]]+)\]/g;
+      let m;
+      while ((m = re.exec(content)) !== null) {
+        vocabs.push({ es: m[1].trim(), nl: m[2].trim(), category: m[3].trim() });
+      }
+      const text = content.replace(/\[VOCAB:[^\]]*\]/g, '').replace(/\n{3,}/g, '\n\n').trim();
+      return { text, vocabs };
+    }
+
+    async function sendChatMessage() {
+      const input = document.getElementById('chat-input');
+      const text = (input.value || '').trim();
+      if (!text || chatPending) return;
+      const key = localStorage.getItem(API_KEY_STORAGE);
+      if (!key) { showApiKeyModal(); return; }
+      input.value = '';
+      input.style.height = '';
+      chatHistory.push({ role: 'user', content: text });
+      renderChatMessages();
+      showTypingIndicator();
+      chatPending = true;
+      document.getElementById('chat-send').disabled = true;
+      try {
+        const reply = await callClaude(key);
+        chatHistory.push({ role: 'assistant', content: reply });
+      } catch (err) {
+        chatHistory.push({ role: 'assistant', content: '⚠️ ' + err.message });
+      } finally {
+        chatPending = false;
+        document.getElementById('chat-send').disabled = false;
+        hideTypingIndicator();
+        renderChatMessages();
+      }
+    }
+
+    function showTypingIndicator() {
+      const el = document.getElementById('chat-messages');
+      const wrap = document.createElement('div');
+      wrap.className = 'msg assistant';
+      wrap.id = 'typing-indicator';
+      wrap.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+      el.appendChild(wrap);
+      el.scrollTop = el.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+      const t = document.getElementById('typing-indicator');
+      if (t) t.remove();
+    }
+
+    async function callClaude(apiKey) {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 1024,
+          system: SYSTEM_PROMPT,
+          messages: chatHistory
+        })
+      });
+      if (!res.ok) {
+        let msg = 'HTTP ' + res.status;
+        try { msg = (await res.json()).error?.message || msg; } catch {}
+        throw new Error(msg);
+      }
+      const data = await res.json();
+      return data.content[0].text;
+    }
+
+    function handleChatKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendChatMessage();
+      }
+    }
+
+    function autoResizeInput(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 110) + 'px';
+    }
+
+    function showApiKeyModal() {
+      document.getElementById('api-key-input').value = '';
+      document.getElementById('api-key-modal').classList.add('visible');
+      setTimeout(() => document.getElementById('api-key-input').focus(), 150);
+    }
+
+    function closeApiKeyModal() {
+      document.getElementById('api-key-modal').classList.remove('visible');
+    }
+
+    function saveApiKey() {
+      const val = (document.getElementById('api-key-input').value || '').trim();
+      if (!val) { closeApiKeyModal(); return; }
+      localStorage.setItem(API_KEY_STORAGE, val);
+      closeApiKeyModal();
+      if (chatHistory.length === 0) { appendWelcome(); renderChatMessages(); }
+    }
+
+    function showAddWordModal(es = '', nl = '', category = 'General') {
+      document.getElementById('add-es').value = es;
+      document.getElementById('add-nl').value = nl;
+      const validCats = ['Pregnancy', 'Hospital', 'Parenting', 'General'];
+      document.getElementById('add-cat').value = validCats.includes(category) ? category : 'General';
+      document.getElementById('add-word-modal').classList.add('visible');
+      setTimeout(() => document.getElementById('add-es').focus(), 150);
+    }
+
+    function closeAddWordModal() {
+      document.getElementById('add-word-modal').classList.remove('visible');
+    }
+
+    function saveNewWord() {
+      const es = (document.getElementById('add-es').value || '').trim();
+      const nl = (document.getElementById('add-nl').value || '').trim();
+      const category = document.getElementById('add-cat').value;
+      if (!es || !nl) return;
+      const card = { es, nl, category };
+      try {
+        const customs = JSON.parse(localStorage.getItem(CUSTOM_KEY) || '[]');
+        customs.push(card);
+        localStorage.setItem(CUSTOM_KEY, JSON.stringify(customs));
+      } catch {}
+      CARDS.push(card);
+      CATEGORIES = ["All", ...new Set(CARDS.map(c => c.category))];
+      closeAddWordModal();
+      chatHistory.push({ role: 'assistant', content: '✅ "' + es + '" (' + nl + ') toegevoegd aan de ' + category + '-categorie!' });
+      renderChatMessages();
     }
 
     buildHomeScreen();

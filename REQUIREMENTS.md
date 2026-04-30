@@ -17,7 +17,9 @@
 - Session deck is drawn randomly from due cards, capped to the selected card count
 - Navigate back to home from the study screen (← Home button) or done screen (← Back to home)
 - Navigate manually with prev/next and shuffle buttons
-- Track score (got it / again counts)
+- Track score (got it / again counts) per session and cumulatively across all sessions
+  - Cumulative all-time score is persisted in `localStorage` (`flash_scores`) and shown on the home screen
+  - "Reset progress" also clears the all-time score
 - Progress bar showing mastered cards out of total
 - Show level indicator per card (Level 1 · ES→EN / Level 2 · EN→ES)
 - End screen when all cards are mastered, with score summary and restart
@@ -29,6 +31,15 @@
   - "All caught up!" screen shown when no cards are due for review
   - End screen shows when the next batch of cards is due
   - "Reset progress" button clears all SRS history from `localStorage`
+
+- **Spanish Tutor chat interface:** a dedicated chat screen powered by the Claude API (Haiku model)
+  - Accessible via "💬 Spanish Tutor" button on the home screen
+  - User provides their own Anthropic API key, stored in `localStorage` (`flash_claude_key`)
+  - System prompt tunes Claude as a Spanish/Dutch vocabulary tutor
+  - Claude tags vocabulary suggestions as `[VOCAB: Spanish | Dutch | Category]`; these are parsed and rendered as "💾 Save to deck" chips on assistant messages
+  - "＋ Add word to deck" button always visible at bottom of chat screen; opens a bottom-sheet form to manually add a Spanish/Dutch word with a category
+  - Custom words are persisted in `localStorage` (`flash_custom_cards`) and merged into the card deck on page load, making them immediately available for spaced-repetition study
+  - Chat history persists within the page session but is not saved across reloads
 
 ## Non-functional
 

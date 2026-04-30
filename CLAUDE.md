@@ -1,5 +1,9 @@
 # Flash – Claude Instructions
 
+## Environment
+
+- The app runs on a **mobile phone browser**. All UI decisions should prioritise touch interaction, small screens, and thumb-friendly tap targets. Avoid hover-only interactions, small text, or layouts that assume a mouse or wide viewport.
+
 ## Workflow
 
 - After completing every task, merge all changes to `main` and push.
